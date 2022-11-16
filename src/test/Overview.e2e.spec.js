@@ -1,8 +1,4 @@
-//import * as app from '../framework/index.js'
-//import signIn from '../framework/signIn';
-
 const signIn = require('../framework/signIn');
-
 const { chromium } = require('playwright');
 const pw = require('playwright-core')
 const { expect } = require('@playwright/test');
@@ -13,35 +9,33 @@ const { credentials } = helper;
 const { credentials_wrong } = helper;
 const { test } = require('mocha');
 const { selectors } = locator_selector.page.login;
-const PAGE_URL = require ('../config/vikunja_url')
+const PAGE_URL = require ('../config/vikunja_url');
+const before_test  = require('../framework/beforeEach');
+const after_test  = require('../framework/afterEach');
 
-let page, browser, context, name_test, task_name_from_list;
-
+let name_test, task_name_from_list;
+let page, browser;
 const name_task = 'Test_Add_Task';
 
 describe('Vikunja:Current task', () => {
   jest.setTimeout(150000);
   beforeEach(async function() {
-    browser = await chromium.launch({
-      headless: false,
-      slowMo: 1000
-    });
-    context = await browser.newContext();
-    page = await context.newPage(PAGE_URL)
+    const before = await before_test.beforeEachTest();
+    page = before.page;
+    browser = before.browser;
 
     await signIn.logIn(page);
   })
 
   afterEach(async function() {
-    await page.screenshot({ path: `screenshots/UI_Test_${name_test}.png` })
-    await browser.close()
+    await after_test.AfterEachTest(page, browser, name_test);
   })
 
   it('Add new task', async () => {   
     name_test = "Add new task";
 
     await page.goto(PAGE_URL); 
-    await page.mainFrame().waitForSelector('.card-content');
+    //await page.mainFrame().waitForSelector('.card-content');
 
     await page.locator(selectors.addTask).fill(name_task);
     await page.click(selectors.AddButton);

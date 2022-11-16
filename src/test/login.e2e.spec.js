@@ -14,26 +14,22 @@ const { credentials } = helper;
 const { credentials_wrong } = helper;
 const { test } = require('mocha');
 const { selectors } = locator_selector.page.login;
-
+const before_test  = require('../framework/beforeEach');
+const after_test  = require('../framework/afterEach');
 
 let page, browser, context, name_test
 
 describe('Vikunja:login', () => {
   beforeEach(async function() {
-    browser = await playwright.chromium.launch({
-      headless: false,
-      slowMo: 1000
-    });
-      
-    context = await browser.newContext()
-    page = await context.newPage('https://try.vikunja.io')
+    const before = await before_test.beforeEachTest();
+    page = before.page;
+    browser = before.browser;
   })
 
   afterEach(async function() {
     jest.setTimeout(10000)
     //sconsole.log('this',this.currentTest, this.currentTest?.title);
-    await page.screenshot({ path: `screenshots/UI_Test_${name_test}.png` })
-    await browser.close()
+    await after_test.AfterEachTest(page, browser, name_test);
   })
 
 
