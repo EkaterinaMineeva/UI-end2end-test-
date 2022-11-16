@@ -35,7 +35,7 @@ describe('Vikunja:Current task', () => {
     name_test = "Add new task";
 
     await page.goto(PAGE_URL); 
-    //await page.mainFrame().waitForSelector('.card-content');
+    await page.mainFrame().waitForSelector('.card-content');
 
     await page.locator(selectors.addTask).fill(name_task);
     await page.click(selectors.AddButton);
